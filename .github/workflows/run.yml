@@ -1,0 +1,31 @@
+name: Run RSI Alert
+
+on:
+  schedule:
+    - cron: "0 22 * * *"   # 日本時間 7:00 に実行（UTC 22:00）
+  workflow_dispatch:        # 手動実行も可能
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install yfinance ta requests
+
+      - name: Run script
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          SENDGRID_SENDER: ${{ secrets.SENDGRID_SENDER }}
+          SENDGRID_TO: ${{ secrets.SENDGRID_TO }}
+        run: |
+          python rsi_alert.py
