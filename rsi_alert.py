@@ -93,11 +93,11 @@ for ticker, name in stocks.items():
 
         if percentile <= 10:
             comment = "かなり売られています"
-        elif percentile <= 30:
+        elif percentile <= 20:
             comment = "売られ気味"
         elif percentile >= 90:
             comment = "かなり買われています"
-        elif percentile >= 70:
+        elif percentile >= 80:
             comment = "買われ気味"
         else:
             continue
