@@ -34,13 +34,26 @@ def send_email(subject, body, to_email):
 # 監視銘柄
 # ==========================
 stocks = {
-    "AAPL": "Apple",
-    "MSFT": "Microsoft",
     "NVDA": "NVIDIA",
     "AMZN": "Amazon",
-    "GOOGL": "Alphabet",
-    "META": "Meta",
-    "TSLA": "Tesla"
+    "GOOGL": "Google",
+    "LLY": "LLY",
+    "QQQ": "QQQ",
+    "GEV": "GEV",
+    "GE": "GE",
+    "CRWD": "CRWD",
+    "AVGO": "AVGO(ブロードコム)",
+    "LRCX": "LRCX(ラムリサーチ)",
+    "ANET": "ANET",
+    "COST": "COST",
+    "AU": "AU",
+    "TOL": "TOL",
+    "DELL": "DELL",
+    "SCCO": "SCCO",
+    "CIB": "CIB",
+    "INTC": "INTC",
+    "GLW": "GLW",
+    "GS":"GS"
 }
 
 # ==========================
@@ -80,14 +93,14 @@ for ticker, name in stocks.items():
 
         if percentile <= 10:
             comment = "かなり売られています"
-        elif percentile <= 20:
+        elif percentile <= 30:
             comment = "売られ気味"
         elif percentile >= 90:
             comment = "かなり買われています"
-        elif percentile >= 80:
+        elif percentile >= 70:
             comment = "買われ気味"
         else:
-            comment = "通常の範囲です"
+            continue
 
         message += (
             f"{name} ({ticker})\n"
