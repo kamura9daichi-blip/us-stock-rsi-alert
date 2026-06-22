@@ -1,13 +1,14 @@
 import yfinance as yf
 from ta.momentum import RSIIndicator
 import requests
+import os
 
 # ==========================
-# SendGrid メール送信
+# SendGrid メール送信（Secrets 使用）
 # ==========================
 def send_email(subject, body, to_email):
-    api_key = "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"  # ←貼る
-    sender = "kamura.9.daichi@gmail.com"  # ←SendGridで認証したメール
+    api_key = os.getenv("SENDGRID_API_KEY")        # ← Secrets から取得
+    sender = os.getenv("SENDGRID_SENDER")          # ← Secrets から取得
 
     data = {
         "personalizations": [
@@ -53,7 +54,7 @@ stocks = {
     "CIB": "CIB",
     "INTC": "INTC",
     "GLW": "GLW",
-    "GS":"GS"
+    "GS": "GS"
 }
 
 # ==========================
@@ -120,7 +121,7 @@ if message != "【米国株RSIアラート】\n\n":
     send_email(
         subject="米国株 RSI アラート",
         body=message,
-        to_email="kamura.9.daichi@gmail.com"  # ←ここに送信先
+        to_email=os.getenv("SENDGRID_TO")   # ← Secrets から取得
     )
     print("メール送信しました")
 else:
