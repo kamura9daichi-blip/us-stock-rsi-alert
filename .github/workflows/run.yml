@@ -2,7 +2,7 @@ name: Run RSI Alert
 
 on:
   schedule:
-  - cron: "0 10 * * *"   # JST 19:00（夜7時）
+  - cron: "7 7 * * *"   # JST 16:07（夜7時）
   workflow_dispatch:        # 手動実行も可能
 
 jobs:
