@@ -54,7 +54,15 @@ stocks = {
     "CIB": "CIB",
     "INTC": "INTC",
     "GLW": "GLW",
-    "GS": "GS"
+    "GS": "GS",
+    "JNJ": "JNJ",
+    "SMH": "SMH",
+    "LRCX": "LRCX",
+    "CPA": "CPA",
+    "MPC": "MPC",
+    "HONA": "HONA",
+    "CAT": "CAT",
+    "AAPL": "Apple",
 }
 
 # ==========================
