@@ -24,8 +24,7 @@ jobs:
 
       - name: Run script
         env:
-          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-          SENDGRID_SENDER: ${{ secrets.SENDGRID_SENDER }}
-          SENDGRID_TO: ${{ secrets.SENDGRID_TO }}
+          GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
+          GMAIL_TO: ${{ secrets.GMAIL_TO }}
         run: |
           python rsi_alert.py

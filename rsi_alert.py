@@ -1,35 +1,69 @@
 import yfinance as yf
 from ta.momentum import RSIIndicator
-import requests
 import os
+import json
+import base64
+from email.mime.text import MIMEText
+
+from googleapiclient.discovery import build
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 
 # ==========================
-# SendGrid メール送信（Secrets 使用）
+# Secrets から token.json を復元
+# ==========================
+def restore_token_json():
+    token_str = os.getenv("GMAIL_TOKEN_JSON")
+    if token_str:
+        with open("token.json", "w") as f:
+            f.write(token_str)
+
+restore_token_json()
+
+# ==========================
+# Gmail API 認証
+# ==========================
+SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
+
+def gmail_service():
+    creds = None
+
+    # Secrets から復元された token.json を使う
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+
+    # ローカルで実行する場合のみ OAuth 認証を開始
+    if not creds or not creds.valid:
+        flow = InstalledAppFlow.from_client_secrets_file(
+            "credentials.json", SCOPES
+        )
+        creds = flow.run_local_server(port=0)
+
+        # 新しい token.json を保存
+        with open("token.json", "w") as token:
+            token.write(creds.to_json())
+
+    return build("gmail", "v1", credentials=creds)
+
+# ==========================
+# Gmail API メール送信
 # ==========================
 def send_email(subject, body, to_email):
-    api_key = os.getenv("SENDGRID_API_KEY")        # ← Secrets から取得
-    sender = os.getenv("SENDGRID_SENDER")          # ← Secrets から取得
+    service = gmail_service()
 
-    data = {
-        "personalizations": [
-            {"to": [{"email": to_email}]}
-        ],
-        "from": {"email": sender},
-        "subject": subject,
-        "content": [{"type": "text/plain", "value": body}]
-    }
+    message = MIMEText(body)
+    message["to"] = to_email
+    message["subject"] = subject
 
-    response = requests.post(
-        "https://api.sendgrid.com/v3/mail/send",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        },
-        json=data
-    )
+    raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
+    message_body = {"raw": raw}
 
-    print("送信結果:", response.status_code)
+    sent = service.users().messages().send(
+        userId="me",
+        body=message_body
+    ).execute()
 
+    print("送信完了:", sent.get("id"))
 
 # ==========================
 # 監視銘柄
@@ -57,7 +91,6 @@ stocks = {
     "GS": "GS",
     "JNJ": "JNJ",
     "SMH": "SMH",
-    "LRCX": "LRCX",
     "CPA": "CPA",
     "MPC": "MPC",
     "HONA": "HONA",
@@ -121,15 +154,14 @@ for ticker, name in stocks.items():
     except Exception as e:
         print(f"{ticker} エラー: {e}")
 
-
 # ==========================
-# SendGrid で送信
+# Gmail API で送信
 # ==========================
 if message != "【米国株RSIアラート】\n\n":
     send_email(
         subject="米国株 RSI アラート",
         body=message,
-        to_email=os.getenv("SENDGRID_TO")   # ← Secrets から取得
+        to_email=os.getenv("GMAIL_TO")   # ← Secrets から取得
     )
     print("メール送信しました")
 else:
