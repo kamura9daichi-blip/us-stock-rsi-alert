@@ -26,6 +26,7 @@ jobs:
       - name: Run RSI Alert
         env:
           GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
+          GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
           GMAIL_TO: ${{ secrets.GMAIL_TO }}
         run: |
           python rsi_alert.py

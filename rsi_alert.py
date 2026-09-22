@@ -10,6 +10,17 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 # ==========================
+# Secrets から credentials.json を復元
+# ==========================
+def restore_credentials_json():
+    cred_str = os.getenv("GMAIL_CREDENTIALS_JSON")
+    if cred_str:
+        with open("credentials.json", "w") as f:
+            f.write(cred_str)
+
+restore_credentials_json()
+
+# ==========================
 # Secrets から token.json を復元
 # ==========================
 def restore_token_json():
