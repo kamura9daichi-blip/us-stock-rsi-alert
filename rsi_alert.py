@@ -80,6 +80,7 @@ def send_email(subject, body, to_email):
 # 監視銘柄
 # ==========================
 stocks = {
+    "VOO": "VOO",
     "NVDA": "NVIDIA",
     "AMZN": "Amazon",
     "GOOGL": "Google",
@@ -91,6 +92,7 @@ stocks = {
     "AVGO": "AVGO(ブロードコム)",
     "LRCX": "LRCX(ラムリサーチ)",
     "ANET": "ANET",
+    "MU": "MU",
     "COST": "COST",
     "AU": "AU",
     "TOL": "TOL",
@@ -100,6 +102,7 @@ stocks = {
     "INTC": "INTC",
     "GLW": "GLW",
     "GS": "GS",
+    "JPM": "JPM",
     "JNJ": "JNJ",
     "SMH": "SMH",
     "CPA": "CPA",
@@ -107,6 +110,11 @@ stocks = {
     "HONA": "HONA",
     "CAT": "CAT",
     "AAPL": "Apple",
+    "CVX": "CVX",
+    "FDX": "FDX",
+    "US10Y": "US10Y",
+    "DAL": "DAL",
+    "PLTR": "PLTR",
 }
 
 # ==========================
