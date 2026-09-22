@@ -42,19 +42,19 @@ def gmail_service():
     # Secrets から復元された token.json を使う
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+        return build("gmail", "v1", credentials=creds)
 
-    # ローカルで実行する場合のみ OAuth 認証を開始
-    if not creds or not creds.valid:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            "credentials.json", SCOPES
-        )
-        creds = flow.run_local_server(port=0)
+    # ここから下はローカル専用（GitHub Actions では絶対に使わない）
+    flow = InstalledAppFlow.from_client_secrets_file(
+        "credentials.json", SCOPES
+    )
+    creds = flow.run_local_server(port=0)
 
-        # 新しい token.json を保存
-        with open("token.json", "w") as token:
-            token.write(creds.to_json())
+    with open("token.json", "w") as token:
+        token.write(creds.to_json())
 
     return build("gmail", "v1", credentials=creds)
+
 
 # ==========================
 # Gmail API メール送信
