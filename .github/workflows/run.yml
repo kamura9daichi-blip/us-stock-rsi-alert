@@ -2,7 +2,7 @@ name: Daily RSI Alert
 
 on:
   schedule:
-    - cron: "0 22 * * *"   # JST 7:00 → GitHub UTC 22:00
+    - cron: "0 01 * * *"   # JST 10:00（GitHubはUTC）
   workflow_dispatch:
 
 jobs:
@@ -25,9 +25,7 @@ jobs:
 
       - name: Run RSI Alert
         env:
-          GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
-          GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
-          GMAIL_TO: ${{ secrets.GMAIL_TO }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_TO: ${{ secrets.RESEND_TO }}
         run: |
           python rsi_alert.py
-

@@ -1,80 +1,30 @@
 import yfinance as yf
 from ta.momentum import RSIIndicator
 import os
-import json
-import base64
-from email.mime.text import MIMEText
-
-from googleapiclient.discovery import build
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+import resend
 
 # ==========================
-# Secrets から credentials.json を復元
+# Resend API キー設定
 # ==========================
-def restore_credentials_json():
-    cred_str = os.getenv("GMAIL_CREDENTIALS_JSON")
-    if cred_str:
-        with open("credentials.json", "w") as f:
-            f.write(cred_str)
-
-restore_credentials_json()
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 # ==========================
-# Secrets から token.json を復元
-# ==========================
-def restore_token_json():
-    token_str = os.getenv("GMAIL_TOKEN_JSON")
-    if token_str:
-        with open("token.json", "w") as f:
-            f.write(token_str)
-
-restore_token_json()
-
-# ==========================
-# Gmail API 認証
-# ==========================
-SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
-
-def gmail_service():
-    creds = None
-
-    # Secrets から復元された token.json を使う
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-        return build("gmail", "v1", credentials=creds)
-
-    # ここから下はローカル専用（GitHub Actions では絶対に使わない）
-    flow = InstalledAppFlow.from_client_secrets_file(
-        "credentials.json", SCOPES
-    )
-    creds = flow.run_local_server(port=0)
-
-    with open("token.json", "w") as token:
-        token.write(creds.to_json())
-
-    return build("gmail", "v1", credentials=creds)
-
-
-# ==========================
-# Gmail API メール送信
+# Resend メール送信
 # ==========================
 def send_email(subject, body, to_email):
-    service = gmail_service()
+    params = {
+        "from": "RSI Alert <onboarding@resend.dev>",  # 認証済みドメインに変更可
+        "to": [to_email],
+        "subject": subject,
+        "html": body.replace("\n", "<br>")  # 改行をHTMLに変換
+    }
 
-    message = MIMEText(body)
-    message["to"] = to_email
-    message["subject"] = subject
+    try:
+        email = resend.Emails.send(params)
+        print("送信完了:", email)
+    except Exception as e:
+        print("送信エラー:", e)
 
-    raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
-    message_body = {"raw": raw}
-
-    sent = service.users().messages().send(
-        userId="me",
-        body=message_body
-    ).execute()
-
-    print("送信完了:", sent.get("id"))
 
 # ==========================
 # 監視銘柄
@@ -174,14 +124,15 @@ for ticker, name in stocks.items():
         print(f"{ticker} エラー: {e}")
 
 # ==========================
-# Gmail API で送信
+# Resend で送信
 # ==========================
 if message != "【米国株RSIアラート】\n\n":
     send_email(
         subject="米国株 RSI アラート",
         body=message,
-        to_email=os.getenv("GMAIL_TO")   # ← Secrets から取得
+        to_email=os.getenv("RESEND_TO")   # ← Secrets から取得
     )
     print("メール送信しました")
 else:
     print("通知対象はありませんでした。")
+
