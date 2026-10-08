@@ -2,7 +2,7 @@ name: Daily RSI Alert
 
 on:
   schedule:
-    - cron: "0 15 * * *"   # JST 10:00（GitHubはUTC）
+    - cron: "0 19 * * *"   # JST 04:00（GitHubはUTC）
   workflow_dispatch:
 
 jobs:
